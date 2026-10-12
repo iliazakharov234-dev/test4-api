@@ -1,0 +1,27 @@
+name: ЛР4 — CI (API tests)
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, pdo, pdo_sqlite, sqlite3
+      - name: Copy .env
+        run: cp .env.example .env
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+      - name: Generate key
+        run: php artisan key:generate
+      - name: Directory permissions
+        run: chmod -R 777 storage bootstrap/cache
+      - name: Run API tests (PHPUnit)
+        run: php artisan test --testsuite=Feature

@@ -1,0 +1,30 @@
+meta {
+  name: 11. POST /api/logout — с токеном
+  type: http
+  seq: 11
+}
+
+docs {
+  Выход: удаляет текущий токен. ВАЖНО: после выполнения токен перестаёт работать — запросы 8-9 с ним вернут 401, нужно логиниться заново (запрос 4). Без токена или с невалидным — ожидание 401. Ожидание: 200 {"message":"Logged out"}.
+}
+
+post {
+  url: {{base_url}}/api/logout
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{auth_token}}
+  Accept: application/json
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("message is Logged out", function() {
+    expect(res.body.message).to.equal("Logged out");
+  });
+}

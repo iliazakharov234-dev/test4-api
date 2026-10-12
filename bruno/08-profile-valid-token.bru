@@ -1,0 +1,42 @@
+meta {
+  name: 8. GET /api/profile — с валидным токеном
+  type: http
+  seq: 8
+}
+
+docs {
+  Токен берётся из переменной auth_token (заполняется запросами 1 или 4). Если переменная пуста — сначала выполните запрос 4. Ожидание: 200 + UserResource {data:{id, name, email, created_at}}.
+}
+
+get {
+  url: {{base_url}}/api/profile
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{auth_token}}
+  Accept: application/json
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response has data.id", function() {
+    expect(res.body.data.id).to.exist;
+  });
+
+  test("response has data.name", function() {
+    expect(res.body.data.name).to.exist;
+  });
+
+  test("response has data.email", function() {
+    expect(res.body.data.email).to.exist;
+  });
+
+  test("response has data.created_at", function() {
+    expect(res.body.data.created_at).to.exist;
+  });
+}

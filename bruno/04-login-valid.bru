@@ -1,0 +1,43 @@
+meta {
+  name: 4. POST /api/login — валидные данные
+  type: http
+  seq: 4
+}
+
+docs {
+  ВАЖНО: перед запуском зарегистрировать login@test.ru (запрос 1 с изменённым email). Ожидание: 200 {user, token}. Токен сохраняется в переменную auth_token для запросов 8, 9 и 11.
+}
+
+post {
+  url: {{base_url}}/api/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "email": "login@test.ru",
+    "password": "Qwerty12"
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.token) {
+    bru.setEnvVar('auth_token', res.body.token);
+  }
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response has token", function() {
+    expect(res.body.token).to.exist;
+  });
+}

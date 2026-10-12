@@ -1,0 +1,39 @@
+meta {
+  name: 2. POST /api/register — невалидный email
+  type: http
+  seq: 2
+}
+
+docs {
+  Невалидный email. Ожидание: 422 и ошибка валидации по полю email.
+}
+
+post {
+  url: {{base_url}}/api/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "name": "Ivan",
+    "email": "invalid-email",
+    "password": "Qwerty12",
+    "password_confirmation": "Qwerty12"
+  }
+}
+
+tests {
+  test("status is 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("validation error on email", function() {
+    expect(res.body.errors.email).to.exist;
+  });
+}

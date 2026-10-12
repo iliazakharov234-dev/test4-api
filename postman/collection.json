@@ -1,0 +1,501 @@
+{
+  "info": {
+    "name": "ЛР4 — Laravel 8 API (Sanctum)",
+    "description": "Postman Collection v2.1 для API проекта test4 (Laravel 8, PHP 7.4, Sanctum 2.x, PHPUnit 9).\n\nПеременная base_url = http://test4/public (домен OpenServer).\n\nВАЖНО о токене: токен НЕ задан жёстко. Запустите запрос \"4. POST /api/login — валидные данные\" — в ответе поле \"token\" сохраняется в переменную окружения/коллекции auth_token (см. Tests: pm.collectionVariables.set('auth_token', ...)). Далее запросы 7-9 подставляют Bearer {{auth_token}} автоматически.\n\nОжидаемые коды: 201 — регистрация, 200 — успешный login/profile/logout, 401 — неверные учётные данные/отсутствует или невалидный токен, 422 — ошибка валидации, 404 — несуществующий эндпоинт.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://test4/public",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. POST /api/register — валидные данные",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test('Response has user and token', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('token');",
+              "    pm.expect(json.user).to.have.property('id');",
+              "    pm.expect(json.user).to.have.property('name');",
+              "    pm.expect(json.user).to.have.property('email');",
+              "});",
+              "// Сохраняем токен для последующих запросов",
+              "pm.collectionVariables.set('auth_token', pm.response.json().token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Ivan\",\n  \"email\": \"ivan@test.ru\",\n  \"password\": \"Qwerty12\",\n  \"password_confirmation\": \"Qwerty12\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/register",
+          "host": ["{{base_url}}"],
+          "path": ["api", "register"]
+        },
+        "description": "Валидные данные: name, email, password (>=8), password_confirmation. Ожидание: 201 + {user, token}."
+      }
+    },
+    {
+      "name": "2. POST /api/register — невалидный email",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 422', function () {",
+              "    pm.response.to.have.status(422);",
+              "});",
+              "pm.test('Validation error on email', function () {",
+              "    pm.expect(pm.response.json()).to.have.property('errors');",
+              "    pm.expect(pm.response.json().errors).to.have.property('email');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Ivan\",\n  \"email\": \"invalid-email\",\n  \"password\": \"Qwerty12\",\n  \"password_confirmation\": \"Qwerty12\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/register",
+          "host": ["{{base_url}}"],
+          "path": ["api", "register"]
+        },
+        "description": "Невалидный email. Ожидание: 422, ошибка валидации по полю email."
+      }
+    },
+    {
+      "name": "3. POST /api/register — дубликат email",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 422', function () {",
+              "    pm.response.to.have.status(422);",
+              "});",
+              "pm.test('Unique validation failed on email', function () {",
+              "    pm.expect(pm.response.json().errors).to.have.property('email');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Petr\",\n  \"email\": \"dup@test.ru\",\n  \"password\": \"Qwerty12\",\n  \"password_confirmation\": \"Qwerty12\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/register",
+          "host": ["{{base_url}}"],
+          "path": ["api", "register"]
+        },
+        "description": "Дубликат email: сначала зарегистрируйте dup@test.ru (запрос 1 с изменённым email), затем повторите. Правило unique:users. Ожидание: 422."
+      }
+    },
+    {
+      "name": "4. POST /api/login — валидные данные",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response has token', function () {",
+              "    pm.expect(pm.response.json()).to.have.property('token');",
+              "});",
+              "// Сохраняем токен в переменную коллекции auth_token",
+              "pm.collectionVariables.set('auth_token', pm.response.json().token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"login@test.ru\",\n  \"password\": \"Qwerty12\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/login",
+          "host": ["{{base_url}}"],
+          "path": ["api", "login"]
+        },
+        "description": "Валидные данные. Ожидание: 200 + {user, token}. Токен из ответа (поле token) сохраняется в переменную коллекции auth_token — она используется как Bearer в запросах 7-9."
+      }
+    },
+    {
+      "name": "5. POST /api/login — неверный пароль",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 401', function () {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "pm.test('Message is Invalid credentials', function () {",
+              "    pm.expect(pm.response.json().message).to.eql('Invalid credentials');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"login@test.ru\",\n  \"password\": \"WrongPass1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/login",
+          "host": ["{{base_url}}"],
+          "path": ["api", "login"]
+        },
+        "description": "Неверный пароль при верном email. Ожидание: 401 + {\"message\":\"Invalid credentials\"}."
+      }
+    },
+    {
+      "name": "6. GET /api/profile — без токена",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 401', function () {",
+              "    pm.response.to.have.status(401);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/profile",
+          "host": ["{{base_url}}"],
+          "path": ["api", "profile"]
+        },
+        "description": "Запрос БЕЗ заголовка Authorization. Ожидание: 401 (middleware auth:sanctum)."
+      }
+    },
+    {
+      "name": "7. GET /api/profile — с невалидным токеном",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 401', function () {",
+              "    pm.response.to.have.status(401);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer invalid_token",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/profile",
+          "host": ["{{base_url}}"],
+          "path": ["api", "profile"]
+        },
+        "description": "Заголовок Authorization: Bearer invalid_token (литерально). Ожидание: 401."
+      }
+    },
+    {
+      "name": "8. GET /api/profile — с валидным токеном",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response is a Resource with data', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('data');",
+              "    pm.expect(json.data).to.have.property('id');",
+              "    pm.expect(json.data).to.have.property('name');",
+              "    pm.expect(json.data).to.have.property('email');",
+              "    pm.expect(json.data).to.have.property('created_at');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/profile",
+          "host": ["{{base_url}}"],
+          "path": ["api", "profile"]
+        },
+        "description": "Токен берётся из ответа запроса 4 (POST /api/login → поле token), он сохранён в переменную коллекции auth_token. Если переменная пуста — сначала выполните запрос 4. Ожидание: 200 + UserResource {data: {id, name, email, created_at}}."
+      }
+    },
+    {
+      "name": "9. GET /api/users/1 — с токеном",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response has data.id', function () {",
+              "    pm.expect(pm.response.json().data).to.have.property('id');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/users/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "users", "1"]
+        },
+        "description": "Получение пользователя по id. Токен — {{auth_token}} из ответа login (запрос 4). Ожидание: 200 + UserResource; 404, если пользователя с id=1 нет."
+      }
+    },
+    {
+      "name": "10. GET /api/nonexistent — ожидание 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404', function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/nonexistent",
+          "host": ["{{base_url}}"],
+          "path": ["api", "nonexistent"]
+        },
+        "description": "Несуществующий эндпоинт. Ожидание: 404 (Laravel RouteNotFoundException → HTTP 404)."
+      }
+    },
+    {
+      "name": "11. POST /api/logout — с токеном",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Message is Logged out', function () {",
+              "    pm.expect(pm.response.json().message).to.eql('Logged out');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/logout",
+          "host": ["{{base_url}}"],
+          "path": ["api", "logout"]
+        },
+        "description": "Выход: удаляет текущий токен. Заголовок Authorization: Bearer {{auth_token}} (токен берётся из ответа запроса 4 — POST /api/login). Без токена или с невалидным — ожидание 401. Ожидание: 200 {\"message\":\"Logged out\"}. ВНИМАНИЕ: после выполнения этого запроса токен перестаёт действовать — запросы 8-9 с ним вернут 401, нужно логиниться заново."
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+meta {
+  name: 7. GET /api/profile — с невалидным токеном
+  type: http
+  seq: 7
+}
+
+docs {
+  Заголовок Authorization: Bearer invalid_token (литерально). Ожидание: 401.
+}
+
+get {
+  url: {{base_url}}/api/profile
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer invalid_token
+  Accept: application/json
+}
+
+tests {
+  test("status is 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

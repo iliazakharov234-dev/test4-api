@@ -1,0 +1,25 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+    return view('site.home');
+})->name('home');
+
+Route::get('/api-status', function () {
+    return response()->json(['status' => 'ok', 'service' => 'Laravel API']);
+});
+
+Route::get('/ui/register.html', function () {
+    return response()->file(public_path('ui/register.html'));
+});

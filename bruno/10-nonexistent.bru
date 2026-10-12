@@ -1,0 +1,25 @@
+meta {
+  name: 10. GET /api/nonexistent — ожидание 404
+  type: http
+  seq: 10
+}
+
+docs {
+  Несуществующий эндпоинт. Ожидание: 404 (Laravel RouteNotFoundException → HTTP 404).
+}
+
+get {
+  url: {{base_url}}/api/nonexistent
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("status is 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

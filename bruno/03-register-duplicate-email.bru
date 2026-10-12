@@ -1,0 +1,39 @@
+meta {
+  name: 3. POST /api/register — дубликат email
+  type: http
+  seq: 3
+}
+
+docs {
+  ВАЖНО: перед запуском зарегистрировать dup@test.ru (запрос 1 с изменённым email). Правило unique:users. Ожидание: 422.
+}
+
+post {
+  url: {{base_url}}/api/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "name": "Petr",
+    "email": "dup@test.ru",
+    "password": "Qwerty12",
+    "password_confirmation": "Qwerty12"
+  }
+}
+
+tests {
+  test("status is 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("unique validation failed on email", function() {
+    expect(res.body.errors.email).to.exist;
+  });
+}

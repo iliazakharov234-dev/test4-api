@@ -1,0 +1,32 @@
+meta {
+  name: 9. GET /api/users/1 — с токеном
+  type: http
+  seq: 9
+}
+
+docs {
+  Получение пользователя по id. Токен — {{auth_token}} из ответа login (запрос 4). Ожидание: 200 + UserResource, либо 404, если пользователя с id=1 нет.
+}
+
+get {
+  url: {{base_url}}/api/users/1
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{auth_token}}
+  Accept: application/json
+}
+
+tests {
+  test("status is 200 or 404", function() {
+    expect([200, 404]).to.include(res.status);
+  });
+
+  test("if 200 — response has data.id", function() {
+    if (res.status === 200) {
+      expect(res.body.data.id).to.exist;
+    }
+  });
+}

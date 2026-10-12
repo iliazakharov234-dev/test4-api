@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Registration Form</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Registration Form</h1>
+
+  <!-- novalidate: браузер не должен перехватывать submit, валидацию делает script.js -->
+  <form action="javascript:void(0)" id="registrationForm" novalidate>
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" name="firstName" data-testid="first-name">
+
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" name="lastName" data-testid="last-name">
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" data-testid="email">
+
+    <label for="phone">Phone</label>
+    <input type="tel" id="phone" name="phone" data-testid="phone">
+
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" data-testid="password">
+
+    <label for="confirmPassword">Confirm Password</label>
+    <input type="password" id="confirmPassword" name="confirmPassword" data-testid="confirm-password">
+
+    <fieldset>
+      <legend>Gender</legend>
+      <label><input type="radio" name="gender" id="genderMale" value="male" data-testid="gender-male"> Male</label>
+      <label><input type="radio" name="gender" id="genderFemale" value="female" data-testid="gender-female"> Female</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Hobbies</legend>
+      <label><input type="checkbox" name="hobbies" id="hobbySports" value="sports" data-testid="hobby-sports"> Sports</label>
+      <label><input type="checkbox" name="hobbies" id="hobbyReading" value="reading" data-testid="hobby-reading"> Reading</label>
+      <label><input type="checkbox" name="hobbies" id="hobbyMusic" value="music" data-testid="hobby-music"> Music</label>
+    </fieldset>
+
+    <label for="address">Address</label>
+    <textarea id="address" name="address" data-testid="address"></textarea>
+
+    <button type="submit" id="submit" data-testid="submit">Submit</button>
+
+    <div id="errorBox" data-testid="error-box" hidden></div>
+  </form>
+
+  <div id="registeredEmails" style="display:none"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

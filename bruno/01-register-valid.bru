@@ -1,0 +1,57 @@
+meta {
+  name: 1. POST /api/register — валидные данные
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "name": "Ivan",
+    "email": "ivan2@test.ru",
+    "password": "Qwerty12",
+    "password_confirmation": "Qwerty12"
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.token) {
+    bru.setEnvVar('auth_token', res.body.token);
+  }
+}
+
+tests {
+  test("status is 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("response has token", function() {
+    expect(res.body.token).to.exist;
+  });
+  
+  test("response has user.id", function() {
+    expect(res.body.user.id).to.exist;
+  });
+  
+  test("response has user.name", function() {
+    expect(res.body.user.name).to.exist;
+  });
+  
+  test("response has user.email", function() {
+    expect(res.body.user.email).to.exist;
+  });
+}
+
+docs {
+  Успешная регистрация. Ответ 201 {user, token}. Токен из ответа сохраняется в переменную окружения auth_token.
+}

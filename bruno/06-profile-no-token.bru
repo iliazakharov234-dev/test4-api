@@ -1,0 +1,25 @@
+meta {
+  name: 6. GET /api/profile — без токена
+  type: http
+  seq: 6
+}
+
+docs {
+  Запрос БЕЗ заголовка Authorization. Ожидание: 401 (middleware auth:sanctum).
+}
+
+get {
+  url: {{base_url}}/api/profile
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("status is 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

@@ -1,0 +1,16 @@
+{
+  "info": {
+    "_postman_id": "test-1234",
+    "name": "ЛР4 — Laravel API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Test",
+      "request": {
+        "method": "GET",
+        "url": "http://test4.local/api-status"
+      }
+    ]
+  ]
+}
